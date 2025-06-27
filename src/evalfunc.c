@@ -8658,6 +8658,32 @@ f_islocked(typval_T *argvars, typval_T *rettv)
 }
 
 /*
+ * "keystrtrans()" function
+ * inverse of keytrans, see nvim_replace_termcodes in neovim source base
+ */
+    static void
+f_keystrtrans(typval_T *argvars, typval_T *rettv)
+{
+    char_u *expanded;
+    char_u *rep_buf = NULL;
+    int flags;
+
+    rettv->v_type = VAR_STRING;
+    if (check_for_string_arg(argvars, 0) == FAIL
+	    || argvars[0].vval.v_string == NULL)
+	return;
+
+    flags = REPTERM_DO_LT | REPTERM_SPECIAL;
+
+    // TODO how does free work? do we need vim_strsave?
+    rettv->vval.v_string = replace_termcodes(argvars[0].vval.v_string, &rep_buf, 0, flags, NULL);
+    vim_free(expanded);
+
+    /* TODO: add documentation and what else needed for it to be callable as
+     * vimscript function */
+}
+
+/*
  * "keytrans()" function
  */
     static void
